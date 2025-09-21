@@ -2,12 +2,80 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Inventario</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inventario de Productos</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <h1>Inventario de productos</h1>
-  <!-- Contenido a implementar en pr�ximas etapas -->
-  <script src="main.js"></script>
+  <header class="header">
+    <h1>Inventario de Productos</h1>
+  </header>
+
+  <main class="container">
+    <!-- Formulario -->
+    <section class="card">
+      <h2 class="sr-only">Alta de producto</h2>
+      <form id="form-producto" autocomplete="off">
+        <label>
+          Nombre
+          <input id="nombre" type="text" placeholder="Ej: Teclado mecánico">
+        </label>
+        <label>
+          Precio
+          <input id="precio" type="number" min="0" step="0.01" placeholder="Ej: 199.99">
+        </label>
+        <label>
+          Categoría
+          <select id="categoria">
+            <option value="">Seleccioná…</option>
+            <option>Periférico</option>
+            <option>Audio</option>
+            <option>Storage</option>
+            <option>Monitores</option>
+            <option>Otros</option>
+          </select>
+        </label>
+        <label>
+          Stock
+          <input id="stock" type="number" min="0" step="1" placeholder="Ej: 10">
+        </label>
+
+        <div class="actions">
+          <button id="btn-api" type="button" class="btn btn-secondary">Cargar ejemplo (API)</button>
+          <button class="btn btn-primary">Agregar</button>
+        </div>
+      </form>
+      <p id="msg" class="msg" aria-live="polite"></p>
+    </section>
+
+    <!-- Búsqueda -->
+    <section class="card">
+      <label>
+        Buscar producto
+        <input id="buscar" type="text" placeholder="Nombre o categoría…">
+      </label>
+    </section>
+
+    <!-- Tabla -->
+    <section class="card">
+      <div class="table-scroll">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script defer src="./main.js"></script>
 </body>
 </html>
