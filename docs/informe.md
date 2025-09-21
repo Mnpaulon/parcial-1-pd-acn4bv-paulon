@@ -76,4 +76,13 @@ Producto {
 
 ![Wireframe Inventario](../assets/wireframe.png)
 
+---
+
+## Flujo de uso – Pantalla “Inventario de Productos”
+1. El usuario ingresa nombre, precio, categoría y stock.
+2. Presiona **Agregar** → se valida el formulario; si es correcto, se crea el objeto `Producto` y se guarda en `localStorage`.  
+3. La tabla se actualiza mostrando el nuevo producto (sin recargar la página).
+4. En **Buscar Producto**, al teclear se filtra en vivo por nombre/categoría.
+5. En **Acciones → 🗑️**, al borrar se elimina de la tabla y de `localStorage`.
+6. (Opcional) **Cargar Ejemplo (API)** trae un lote de productos y los inserta en la tabla + `localStorage`.
 
