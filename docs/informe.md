@@ -57,4 +57,18 @@ Producto {
 - [x] Consola sin errores
 - [x] Commits visibles en GitHub
 
+--- 
+
+## 5) Extensiones – Hoja 3 (para subir nota)
+
+- [x] Uso de funciones flecha y funciones regulares de manera adecuada
+- [x] Callback de confirmación al borrar un producto (ej. `confirm()`)
+- [x] Eventos DOM adicionales (ej. `keyup` para buscar, `change` en categorías)
+- [x] Estética mínima con CSS (colores, tipografía, espaciado)
+- [x] Uso correcto de JSON para guardar y recuperar en localStorage
+- [x] Consumo de API externa con `fetch` + `async/await` (Fake Store API)
+- [x] Buenas prácticas de código (indentación, nombres claros, comentarios)
+- [x] Funcionalidad extra: editar producto o búsqueda/filtrado con paginación
+- [x] Creatividad en la presentación de la pantalla
+- [x] Convención de commits (Conventional Commits)
 
