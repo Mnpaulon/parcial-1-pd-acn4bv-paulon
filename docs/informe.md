@@ -74,4 +74,5 @@ Producto {
 
 ---
 
+![Wireframe Inventario](wireframe.png)
 
