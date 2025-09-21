@@ -42,6 +42,7 @@ Producto {
   // precioConIVA(): number
 }
 
+---
 
 ## 4) Requisitos – Hoja 2 (mínimo para aprobar)
 - [x] Una sola pantalla
