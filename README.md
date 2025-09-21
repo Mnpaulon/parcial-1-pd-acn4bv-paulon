@@ -1,2 +1,3 @@
-# parcial-1-pd-acn4bv-paulon
-Parcial 1 â€“ Inventario simple de productos (PD ACN4BV)
+# Parcial 1 - Inventario simple de productos (ACN4BV)
+
+Entrega 1 pantalla (hojas 1–3). Proyecto individual.
