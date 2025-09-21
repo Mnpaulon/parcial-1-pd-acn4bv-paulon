@@ -72,3 +72,11 @@ Producto {
 - [x] Creatividad en la presentación de la pantalla
 - [x] Convención de commits (Conventional Commits)
 
+---
+
+## 6) Wireframe / Mock
+
+![Wireframe Inventario](../assets/wireframe.png)
+
+> Wireframe creado en Figma para representar la pantalla única del inventario.
+
