@@ -41,3 +41,18 @@ Producto {
   // Método mínimo sugerido:
   // precioConIVA(): number
 }
+
+
+## 4) Requisitos – Hoja 2 (mínimo para aprobar)
+- [x] Una sola pantalla
+- [x] Informe que describe la página
+- [x] Variables y estructuras de control
+- [x] Arrays y objetos
+- [x] Clase con constructor y al menos un método
+- [x] Interacción con el DOM
+- [x] Formulario/input para agregar datos nuevos
+- [x] Persistencia en localStorage
+- [x] Consola sin errores
+- [x] Commits visibles en GitHub
+
+
