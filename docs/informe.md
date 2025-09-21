@@ -40,7 +40,7 @@ Producto {
   stock: number;        // entero >= 0
   // Método mínimo sugerido:
   // precioConIVA(): number
-}
+}```
 
 ---
 
