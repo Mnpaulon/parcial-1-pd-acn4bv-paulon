@@ -44,7 +44,7 @@ Inventario de productos con una sola pantalla: permite **agregar**, **listar**, 
 - [x] **Wireframe/Mock** (`assets/wireframe.png`)  
 - [x] **API externa** con `fetch` + `async/await`
 
-## Wireframe
+## Wireframe hecho en figma 
 ![Wireframe](assets/wireframe.png)
 
 ---
