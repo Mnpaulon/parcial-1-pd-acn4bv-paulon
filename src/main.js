@@ -91,7 +91,7 @@ function validarEntrada() {
   return errores;
 }
 
-
+// Para que el boton agregar se valide cuando todos los campos del form se completen 
 function updateAgregarState() {
   btnAgregar.disabled = validarEntrada().length > 0;
 }
