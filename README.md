@@ -1,10 +1,10 @@
-# Parcial 1 – Inventario simple de productos (ACN4BV)
-
 **Alumno:** Matías Paulon  
 **Proyecto individual** – JavaScript, HTML, CSS
 
+# Proyecto del parcial 1 (ACN4BV). Armé un inventario muy simple para practicar JS: alta de productos, búsqueda, borrar y guardado en localStorage. La API la usé para cargar ejemplos de electrónica.
+
 ## Descripción
-Inventario de productos con una sola pantalla: permite **agregar**, **listar**, **buscar**, **eliminar** y **persistir** en `localStorage`. Incluye carga de datos de ejemplo desde una **API**.
+Proyecto del parcial 1 (ACN4BV). Armé un inventario muy simple para practicar JS: alta de productos, búsqueda, borrar y guardado en localStorage. La API la usé para cargar ejemplos de electrónica.**.##
 
 ## Cómo correr
 - Opción 1: Abrir `src/index.html` con la extensión **Live Server** de VS Code.
