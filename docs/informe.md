@@ -86,3 +86,12 @@ Producto {
 5. En **Acciones → 🗑️**, al borrar se elimina de la tabla y de `localStorage`.
 6. (Opcional) **Cargar Ejemplo (API)** trae un lote de productos y los inserta en la tabla + `localStorage`.
 
+---
+
+## Reflexion del proyecto
+
+* “Me costó organizar la validación y no habilitar el botón hasta que estén todos los campos.”
+* “Tuve problemas con Git (pull/rebase) y aprendí a resolverlos.”
+* “El wireframe me ayudó a decidir la disposición antes de escribir HTML.”
+* “La API devuelve campos diferentes; mapeé solo los que usaba.”
+
