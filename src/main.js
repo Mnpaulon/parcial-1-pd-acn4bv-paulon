@@ -1,6 +1,6 @@
 
 
-// ----- Estado y utilidades -----
+//Estado y utilidades
 const STORAGE_KEY = "productos";
 
 const $ = (sel) => document.querySelector(sel); // función flecha
@@ -13,6 +13,9 @@ const msg = $("#msg");
 const tbody = $("#tbody");
 const buscar = $("#buscar");
 const btnApi = $("#btn-api");
+const btnAgregar = form.querySelector(".btn-primary");
+
+
 
 let productos = [];
 let nextId = 1;
@@ -31,7 +34,7 @@ class Producto {
   }
 }
 
-// ----- Persistencia -----
+//Persistencia
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
 }
@@ -49,7 +52,7 @@ function load() {
   }
 }
 
-// ----- Render -----
+// Buscador 
 const render = (filtro = "") => {
   const term = filtro.trim().toLowerCase();
   const list = term
@@ -71,27 +74,40 @@ const render = (filtro = "") => {
   `).join("");
 };
 
-// ----- Validación -----
+// Validación
 function validarEntrada() {
   const errores = [];
+
   if (!nombre.value.trim()) errores.push("El nombre es obligatorio.");
+
   const pr = Number(precio.value);
-  if (!(pr > 0)) errores.push("El precio debe ser mayor a 0.");
+  if (!Number.isFinite(pr) || pr <=0) errores.push("El precio debe ser mayor a 0.");
+
   if (!categoria.value.trim()) errores.push("Seleccioná una categoría.");
+
   const st = Number(stock.value);
-  if (!(Number.isInteger(st) && st >= 0)) errores.push("El stock debe ser un entero ≥ 0.");
+    if (!Number.isInteger(st) || st <= 0) errores.push("El stock debe ser un entero > 0.");
+
   return errores;
 }
 
-// ----- Handlers -----
+
+function updateAgregarState() {
+  btnAgregar.disabled = validarEntrada().length > 0;
+}
+
+//Handlers
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   msg.textContent = "";
+
+  btnAgregar.disabled = true;
 
   const errores = validarEntrada();
   if (errores.length) {
     msg.textContent = "⚠ " + errores.join(" ");
     msg.style.color = "#b00020";
+    updateAgregarState();
     return;
   }
 
@@ -110,13 +126,16 @@ form.addEventListener("submit", (e) => {
   categoria.value = "";
   msg.textContent = "✅ Producto agregado.";
   msg.style.color = "#155724";
+
+  updateAgregarState();
 });
 
 // Delegación para eliminar
 tbody.addEventListener("click", (e) => {
   const id = e.target.dataset.del;
   if (!id) return;
-  // callback de confirmación:
+
+  // callback de confirmación
   if (!confirm("¿Eliminar este producto?")) return;
 
   productos = productos.filter(p => p.id !== Number(id));
@@ -131,32 +150,46 @@ buscar.addEventListener("keyup", () => render(buscar.value));
 btnApi.addEventListener("click", async () => {
   msg.textContent = "Cargando desde API…";
   msg.style.color = "#555";
+  btnApi.disabled = true;
+  btnAgregar.disabled = true;
+
   try {
-    const res = await fetch("https://fakestoreapi.com/products?limit=5");
+    const res = await fetch("https://fakestoreapi.com/products/category/electronics");
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
+
     // Mapear a nuestro modelo
     data.forEach(item => {
       const prod = new Producto(
         nextId++,
         String(item.title).slice(0, 60),
         Number(item.price) || 1,
-        item.category ? String(item.category) : "Otros",
-        Math.floor(Math.random() * 50) + 1 // stock aleatorio 1-50
+        "Periférico",
+        Math.floor(Math.random() * 50) + 1 
       );
       productos.push(prod);
     });
+
     save();
     render(buscar.value);
-    msg.textContent = "✅ Productos de ejemplo cargados.";
+    msg.textContent = "✅ Productos de ejemplo (electrónica) cargados.";
     msg.style.color = "#155724";
   } catch (err) {
     console.error(err);
     msg.textContent = "❌ No se pudo cargar la API. Probá de nuevo.";
     msg.style.color = "#b00020";
+  } finally{
+    btnApi.disabled = false;
+    updateAgregarState();
   }
 });
 
-// ----- Inicialización -----
+[nombre, precio, categoria, stock].forEach(inp => {
+  inp.addEventListener("input", updateAgregarState);
+  inp.addEventListener("change", updateAgregarState);
+});
+
+//Inicialización
 load();
 render();
+updateAgregarState();
