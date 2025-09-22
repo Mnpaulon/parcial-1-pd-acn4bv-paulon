@@ -8,7 +8,7 @@ Inventario de productos con una sola pantalla: permite **agregar**, **listar**, 
 
 ## Cómo correr
 - Opción 1: Abrir `src/index.html` con la extensión **Live Server** de VS Code.
-- Opción 2: Doble clic en `src/index.html` (sin Live Server puede no funcionar el fetch por CORS).
+- Opción 2: Doble clic en `src/index.html` 
 
 ## Estructura
 ├─ assets/
