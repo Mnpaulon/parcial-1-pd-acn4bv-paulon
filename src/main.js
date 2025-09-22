@@ -158,7 +158,7 @@ btnApi.addEventListener("click", async () => {
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
 
-    // Mapear a nuestro modelo
+//Mapear a nuestro modelo
     data.forEach(item => {
       const prod = new Producto(
         nextId++,
