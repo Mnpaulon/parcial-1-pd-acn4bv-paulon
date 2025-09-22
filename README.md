@@ -1,8 +1,6 @@
 **Alumno:** Matías Paulon  
 **Proyecto individual** – JavaScript, HTML, CSS
 
-# Proyecto del parcial 1 (ACN4BV). Armé un inventario muy simple para practicar JS: alta de productos, búsqueda, borrar y guardado en localStorage. La API la usé para cargar ejemplos de electrónica.
-
 ## Descripción
 Proyecto del parcial 1 (ACN4BV). Armé un inventario muy simple para practicar JS: alta de productos, búsqueda, borrar y guardado en localStorage. La API la usé para cargar ejemplos de electrónica.**.##
 
