@@ -30,7 +30,7 @@ Inventario de productos con una sola pantalla: permite **agregar**, **listar**, 
 - **API** de ejemplo (electronics) para precargar registros (`fetch` + `async/await`).
 - Botón **Agregar** deshabilitado hasta que el formulario es válido.
 
-## Requisitos (hojas 1–3)
+## Requisitos
 - [x] Una sola pantalla  
 - [x] Informe (`docs/informe.md`)  
 - [x] Variables y estructuras de control  
