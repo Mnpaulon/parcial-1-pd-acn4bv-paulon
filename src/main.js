@@ -146,7 +146,7 @@ tbody.addEventListener("click", (e) => {
 // Búsqueda
 buscar.addEventListener("keyup", () => render(buscar.value));
 
-// Cargar ejemplos desde API (extra hoja 3)
+// Cargar ejemplos desde API 
 btnApi.addEventListener("click", async () => {
   msg.textContent = "Cargando desde API…";
   msg.style.color = "#555";
