@@ -1,0 +1,23 @@
+[
+  {
+    "id": 2,
+    "nombre": "Mouse Inalámbrico",
+    "precio": 28000,
+    "categoria": "Periférico",
+    "stock": 15
+  },
+  {
+    "id": 3,
+    "nombre": "Monitor 24''",
+    "precio": 125000,
+    "categoria": "Pantallas",
+    "stock": 8
+  },
+  {
+    "id": 4,
+    "nombre": "Parlantes Gamer RGB",
+    "precio": 55000,
+    "categoria": "Audio",
+    "stock": 12
+  }
+]
