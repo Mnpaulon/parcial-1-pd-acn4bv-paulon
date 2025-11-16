@@ -36,12 +36,12 @@ class Producto {
 }
 
 // -------------------------------------
-// API REST (server Express en localhost)
+// API REST
 // -------------------------------------
 const BASE_URL = "http://localhost:3000/api/productos";
 
 async function apiGet() {
-  const r = await fetch(BASE_URL, { headers: { "Accept": "application/json" } });
+  const r = await fetch(BASE_URL);
   if (!r.ok) throw new Error("Error GET " + r.status);
   return r.json();
 }
@@ -49,40 +49,37 @@ async function apiGet() {
 async function apiPost(payload) {
   const r = await fetch(BASE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+
   if (!r.ok) {
     const err = await r.json().catch(() => ({}));
     throw new Error(err.error || ("Error POST " + r.status));
   }
+
+  return r.json();
+}
+
+async function apiPatch(id, payload) {
+  const r = await fetch(`${BASE_URL}/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error || ("Error PATCH " + r.status));
+  }
+
   return r.json();
 }
 
 async function apiDelete(id) {
-  const r = await fetch(`${BASE_URL}/${id}`, { method: "DELETE", headers: { "Accept": "application/json" } });
+  const r = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
   if (!r.ok) throw new Error("Error DELETE " + r.status);
   return r.json();
-}
-
-// -------------------------------------
-// Fallback localStorage (solo emergencia)
-// -------------------------------------
-function saveLocal() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
-}
-function loadLocal() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return;
-  try {
-    const parsed = JSON.parse(raw);
-    productos = parsed.map(p => new Producto(p.id, p.nombre, p.precio, p.categoria, p.stock));
-    nextId = productos.length ? Math.max(...productos.map(p => p.id)) + 1 : 1;
-  } catch {
-    console.warn("No se pudo leer localStorage. Se reinicia el inventario.");
-    productos = [];
-    nextId = 1;
-  }
 }
 
 // -----------------
@@ -97,20 +94,27 @@ function render(filtro = "") {
       )
     : productos;
 
-  tbody.innerHTML = list.map((p, idx) => `
+  tbody.innerHTML = list.map(p => `
     <tr>
-      <td>${idx + 1}</td>
+      <td>${p.id}</td>
       <td>${p.nombre}</td>
       <td>${p.categoria}</td>
-      <td>$ ${p.precio.toFixed(2)} <small style="opacity:.6">(c/IVA: $${p.precioConIVA()})</small></td>
+      <td>$ ${p.precio.toFixed(2)} 
+        <small style="opacity:.6">(c/IVA: $${p.precioConIVA()})</small>
+      </td>
       <td>${p.stock}</td>
-      <td><button class="btn-danger" data-del="${p.id}">Eliminar</button></td>
+
+      <td>
+        <button class="btn-edit" data-edit="${p.id}">Editar</button>
+        <button class="btn-danger" data-del="${p.id}">Eliminar</button>
+      </td>
     </tr>
   `).join("");
 }
 
+
 // ------------
-// Validación UI
+// Validación
 // ------------
 function validarEntrada() {
   const errores = [];
@@ -128,19 +132,13 @@ function validarEntrada() {
   return errores;
 }
 
-function updateAgregarState() {
-  if (!btnAgregar) return;
-  btnAgregar.disabled = validarEntrada().length > 0;
-}
-
 function setMsg(texto, tipo = "ok") {
-  if (!msg) return;
   msg.textContent = texto;
   msg.style.color = tipo === "error" ? "#b00020" : "#155724";
 }
 
 // -----------------
-// Carga desde la API
+// Cargar desde API
 // -----------------
 async function loadFromAPI() {
   const data = await apiGet();
@@ -150,20 +148,18 @@ async function loadFromAPI() {
 }
 
 // ------------------------
-// Handlers de interacción
+// Eventos
 // ------------------------
 function wireEvents() {
-  // Submit (POST)
+
+  // POST
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     setMsg("");
 
-    btnAgregar.disabled = true;
-
     const errores = validarEntrada();
     if (errores.length) {
       setMsg("⚠ " + errores.join(" "), "error");
-      updateAgregarState();
       return;
     }
 
@@ -176,75 +172,99 @@ function wireEvents() {
 
     try {
       await apiPost(payload);
-      await loadFromAPI();         // refrescar la tabla desde el server
+      await loadFromAPI();
       form.reset();
       categoria.value = "";
       setMsg("✅ Producto agregado.");
     } catch (err) {
-      console.error(err);
       setMsg("❌ " + err.message, "error");
-    } finally {
-      updateAgregarState();
     }
   });
 
-  // Delegación para eliminar (DELETE)
+  // DELETE + PATCH
   tbody.addEventListener("click", async (e) => {
-    const id = e.target.dataset.del;
-    if (!id) return;
+    const delId = e.target.dataset.del;
+    const editId = e.target.dataset.edit;
 
-    if (!confirm("¿Eliminar este producto?")) return;
+    // --- DELETE ---
+    if (delId) {
+      if (!confirm("¿Eliminar este producto?")) return;
+      try {
+        await apiDelete(Number(delId));
+        await loadFromAPI();
+        setMsg("🗑️ Producto eliminado.");
+      } catch (err) {
+        setMsg("❌ No se pudo eliminar: " + err.message, "error");
+      }
+      return;
+    }
 
-    try {
-      await apiDelete(Number(id));
-      await loadFromAPI();
-      setMsg("🗑️ Producto eliminado.");
-    } catch (err) {
-      console.error(err);
-      setMsg("❌ No se pudo eliminar: " + err.message, "error");
+    // --- EDITAR (PATCH) ---
+    if (editId) {
+      const id = Number(editId);
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
+
+      const nuevoNombre = prompt("Nuevo nombre:", prod.nombre);
+      if (!nuevoNombre) return;
+
+      const nuevoPrecio = prompt("Nuevo precio:", prod.precio);
+      if (!nuevoPrecio) return;
+
+      const nuevoStock = prompt("Nuevo stock:", prod.stock);
+      if (!nuevoStock) return;
+
+      const nuevaCategoria = prompt("Nueva categoría:", prod.categoria);
+      if (!nuevaCategoria) return;
+
+      const payload = {
+        nombre: nuevoNombre.trim(),
+        precio: Number(nuevoPrecio),
+        categoria: nuevaCategoria.trim(),
+        stock: Number(nuevoStock)
+      };
+
+      try {
+        await apiPatch(id, payload);
+        await loadFromAPI();
+        setMsg("✏️ Producto editado correctamente.");
+      } catch (err) {
+        setMsg("❌ Error al editar: " + err.message, "error");
+      }
     }
   });
 
   // Búsqueda
   buscar.addEventListener("keyup", () => render(buscar.value));
 
-  // Cargar ejemplos (fakestore) -> se cargan al backend con POST
+  // API externa Fakestore
   btnApi.addEventListener("click", async () => {
     setMsg("Cargando desde API de ejemplo…");
     btnApi.disabled = true;
-    btnAgregar.disabled = true;
 
     try {
       const res = await fetch("https://fakestoreapi.com/products/category/electronics");
       if (!res.ok) throw new Error("HTTP " + res.status);
+
       const data = await res.json();
 
-      // Guardar cada item en nuestro backend
       for (const item of data) {
         const payload = {
-          nombre: String(item.title).slice(0, 60),
+          nombre: String(item.title).slice(0,60),
           precio: Number(item.price) || 1,
           categoria: "Periférico",
-          stock: Math.floor(Math.random() * 50) + 1
+          stock: Math.floor(Math.random()*50)+1
         };
         await apiPost(payload);
       }
 
       await loadFromAPI();
-      setMsg("✅ Productos de ejemplo (electrónica) cargados.");
+      setMsg("✅ Productos de ejemplo cargados.");
     } catch (err) {
-      console.error(err);
-      setMsg("❌ No se pudo cargar la API de ejemplo. " + err.message, "error");
+      setMsg("❌ " + err.message, "error");
     } finally {
       btnApi.disabled = false;
-      updateAgregarState();
     }
-  });
-
-  // Validación en vivo para habilitar/deshabilitar el botón Agregar
-  [nombre, precio, categoria, stock].forEach(inp => {
-    inp.addEventListener("input", updateAgregarState);
-    inp.addEventListener("change", updateAgregarState);
   });
 }
 
@@ -253,20 +273,14 @@ function wireEvents() {
 // ---------------
 async function init() {
   try {
-    await loadFromAPI();          // Fuente de verdad: servidor
-  } catch (e) {
-    console.warn("Fallo el GET al backend. Fallback a cache local.", e);
-    loadLocal();                  // fallback solo para mostrar algo si el server no responde
-    render(buscar.value);
-    setMsg("⚠ Mostrando datos de cache local (server offline).", "error");
-  } finally {
-    updateAgregarState();
+    await loadFromAPI();
+  } catch (err) {
+    console.warn("Backend offline. Cargando cache local.");
+    loadLocal();
+    render();
+    setMsg("⚠ Mostrando datos locales.", "error");
   }
   wireEvents();
 }
 
-// Iniciar cuando el DOM esté listo
-document.addEventListener("DOMContentLoaded", () => {
-  if (!form || !tbody) return;
-  init();
-});
+document.addEventListener("DOMContentLoaded", init);
