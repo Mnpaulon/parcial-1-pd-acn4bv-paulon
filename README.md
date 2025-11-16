@@ -1,6 +1,8 @@
-** Alumno:** Matías Paulon
-** Materia:** Plataformas de Desarrollo
-** Proyecto individual** – JavaScript, HTML, CSS
+**Alumno:** Matías Paulon
+
+**Materia:** Plataformas de Desarrollo
+
+**Proyecto individual** – JavaScript, HTML, CSS
 
 ## Descripción
 En el TP1 se desarrolló un inventario básico usando solamente HTML, CSS y JavaScript del lado del cliente.
