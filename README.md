@@ -1,5 +1,5 @@
-**Alumno:** Matías Paulon
-**Materia:** Plataformas de Desarrollo
+**Alumno: Matías Paulon
+**Materia: Plataformas de Desarrollo
 **Proyecto individual** – JavaScript, HTML, CSS
 
 ## Descripción
