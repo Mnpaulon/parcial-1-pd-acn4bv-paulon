@@ -19,6 +19,39 @@ Formulario con validaciones (nombre, precio > 0, categoría, stock > 0)
 - Wireframe realizado en Figma
 - Proyecto sin servidor (todo era del lado del navegador)
 
+Para el TP2 se integró un backend completo en Node.js + Express, agregando persistencia real y un CRUD profesional.
+Todo el frontend fue actualizado para consumir esta nueva API.
+
+Se desarrolló una API REST con las siguientes funcionalidades:
+
+✔️ Endpoints implementados
+- GET /api/productos
+- GET /api/productos/:id
+- POST /api/productos
+- PATCH /api/productos/:id
+- DELETE /api/productos/:id
+
+✔️ Persistencia real
+- Uso de un archivo JSON local: server/productos.json
+- Lectura y escritura con fs/promises
+
+✔️ Middleware
+- express.json()
+- cors()
+- morgan("dev")
+
+✔️ Validaciones del lado del servidor
+- Nombre obligatorio
+- Precio numérico mayor a 0
+- Categoría obligatoria
+- Stock entero mayor a 0
+- Validación parcial para PATCH
+
+✔️ Manejo de errores
+- 400: errores de validación
+- 404: producto no encontrado
+- 500: error interno
+
 ## Cómo correr
 - Opción 1: Abrir `src/index.html` con la extensión **Live Server** de VS Code.
 - Opción 2: Doble clic en `src/index.html` 
