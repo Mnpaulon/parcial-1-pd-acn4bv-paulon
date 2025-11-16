@@ -8,16 +8,16 @@ En el TP1 se desarrolló un inventario básico usando solamente HTML, CSS y Java
 
 Formulario con validaciones (nombre, precio > 0, categoría, stock > 0)
 
--Alta de productos
--Eliminar producto con confirmación
--Búsqueda en vivo por nombre/categoría
--Clase Producto con método precioConIVA()
--Render dinámico con manipulación del DOM
--Persistencia en localStorage (JSON.stringify/parse)
--Botón para cargar ejemplos desde API externa FakeStore (solo en el navegador)
--Una única pantalla (HTML + CSS + JS)
--Wireframe realizado en Figma
--Proyecto sin servidor (todo era del lado del navegador)
+- Alta de productos
+- Eliminar producto con confirmación
+- Búsqueda en vivo por nombre/categoría
+- Clase Producto con método precioConIVA()
+- Render dinámico con manipulación del DOM
+- Persistencia en localStorage (JSON.stringify/parse)
+- Botón para cargar ejemplos desde API externa FakeStore (solo en el navegador)
+- Una única pantalla (HTML + CSS + JS)
+- Wireframe realizado en Figma
+- Proyecto sin servidor (todo era del lado del navegador)
 
 ## Cómo correr
 - Opción 1: Abrir `src/index.html` con la extensión **Live Server** de VS Code.
