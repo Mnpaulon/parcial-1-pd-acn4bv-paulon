@@ -1,70 +1,83 @@
+# 📦 Inventario de Productos – TP1 + TP2
+
 **Alumno:** Matías Paulon
 
 **Materia:** Plataformas de Desarrollo
 
 **Proyecto individual** – JavaScript, HTML, CSS
 
+---
+
 ## Descripción
+
+# 🟦 **TP1 – Proyecto base (Frontend solamente)**
+
 En el TP1 se desarrolló un inventario básico usando solamente HTML, CSS y JavaScript del lado del cliente.
 
-✔️ Funcionalidades originales del TP1
+### ✔️ Funcionalidades originales del TP1
 
-Formulario con validaciones (nombre, precio > 0, categoría, stock > 0)
-
+- Formulario con validaciones (nombre, precio > 0, categoría, stock > 0)
 - Alta de productos
 - Eliminar producto con confirmación
 - Búsqueda en vivo por nombre/categoría
-- Clase Producto con método precioConIVA()
-- Render dinámico con manipulación del DOM
-- Persistencia en localStorage (JSON.stringify/parse)
-- Botón para cargar ejemplos desde API externa FakeStore (solo en el navegador)
-- Una única pantalla (HTML + CSS + JS)
-- Wireframe realizado en Figma
-- Proyecto sin servidor (todo era del lado del navegador)
+- Clase Producto con método `precioConIVA()`
+- Render dinámico con DOM
+- Persistencia en localStorage
+- Carga de ejemplos desde FakeStore (solo en el navegador)
+- Una única pantalla (HTML, CSS y JS)
+- Wireframe en Figma
+- Sin backend (toda la lógica del lado del cliente)
 
-Para el TP2 se integró un backend completo en Node.js + Express, agregando persistencia real y un CRUD profesional.
-Todo el frontend fue actualizado para consumir esta nueva API.
+---
 
-Se desarrolló una API REST con las siguientes funcionalidades:
+# 🟩 **TP2 – Ampliación del proyecto (Backend + CRUD profesional)**
 
-✔️ Endpoints implementados
-- GET /api/productos
-- GET /api/productos/:id
-- POST /api/productos
-- PATCH /api/productos/:id
-- DELETE /api/productos/:id
+Para el TP2 se integró un backend completo en **Node.js + Express** con persistencia real y CRUD completo.  
+El frontend se actualizó para consumir esta API desde el servidor.
 
-✔️ Persistencia real
-- Uso de un archivo JSON local: server/productos.json
-- Lectura y escritura con fs/promises
+### ✔️ Endpoints implementados
 
-✔️ Middleware
-- express.json()
-- cors()
-- morgan("dev")
+- `GET /api/productos`
+- `GET /api/productos/:id`
+- `POST /api/productos`
+- `PATCH /api/productos/:id`
+- `DELETE /api/productos/:id`
 
-✔️ Validaciones del lado del servidor
-- Nombre obligatorio
-- Precio numérico mayor a 0
-- Categoría obligatoria
-- Stock entero mayor a 0
-- Validación parcial para PATCH
+### ✔️ Persistencia real
+- Archivo JSON: `/server/productos.json`
+- Lectura/escritura con `fs/promises`
 
-✔️ Manejo de errores
-- 400: errores de validación
-- 404: producto no encontrado
-- 500: error interno
+### ✔️ Middleware
+- `express.json()`
+- `cors()`
+- `morgan("dev")`
 
-## Integración del frontend con la API real
+### ✔️ Validaciones del lado del servidor
+- Nombre obligatorio  
+- Precio > 0  
+- Categoría obligatoria  
+- Stock entero > 0  
+- Validación parcial en PATCH
 
-El frontend fue adaptado para:
+### ✔️ Manejo de errores
+- 400 (validación)
+- 404 (no encontrado)
+- 500 (error interno)
 
-- Cargar productos desde la API (ya no desde localStorage)
-- Guardar productos usando POST
-- Editar productos usando PATCH
-- Eliminar productos usando DELETE
-- Actualizar la tabla siempre desde el servidor (loadFromAPI())
-- Mostrar mensajes según respuesta del backend
+---
+
+# 🟢 Integración frontend + backend (TP2)
+
+El frontend ahora hace:
+
+- POST → agregar  
+- PATCH → editar  
+- DELETE → eliminar  
+- GET → listar  
+- Cargar datos de ejemplo → se guardan en el backend  
+- Tabla siempre sincronizada con el servidor (`loadFromAPI()`)
+
+---
 
 ## Cómo correr
 
