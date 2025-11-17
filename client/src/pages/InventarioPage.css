@@ -1,0 +1,489 @@
+
+/* ============================================================
+   ESTILOS EXCLUSIVOS PARA InventarioPage
+   ============================================================ */
+
+/* ===== LAYOUT GENERAL ===== */
+.inventario-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #0f172a, #020617);
+}
+
+/* ===== SIDEBAR ===== */
+.inventario-sidebar {
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  backdrop-filter: blur(18px);
+  background: linear-gradient(
+    145deg,
+    rgba(15, 23, 42, 0.85),
+    rgba(15, 23, 42, 0.95)
+  );
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.sidebar-logo-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 0, #38bdf8, #0f172a);
+}
+
+.sidebar-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sidebar-logo-subtitle {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.sidebar-nav-item {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.18s ease-out;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(148, 163, 184, 0.08);
+  color: #e5e7eb;
+}
+
+.sidebar-nav-item--active {
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #0b1120;
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.4);
+}
+
+.sidebar-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.sidebar-user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+/* ===== MAIN ===== */
+.inventario-main {
+  padding: 24px 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.inventario-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===== HEADER ===== */
+.inventario-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.inventario-kicker {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+}
+
+.inventario-title {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 600;
+}
+
+.inventario-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.inventario-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ===== BUSCADOR ===== */
+.inventario-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.inventario-search-icon {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.inventario-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  min-width: 220px;
+}
+
+.inventario-search input::placeholder {
+  color: #6b7280;
+}
+
+/* ===== BOTONES ===== */
+.btn {
+  font-size: 0.85rem;
+  border-radius: 999px;
+  padding: 7px 14px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s ease-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #020617;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(56, 189, 248, 0.35);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #e5e7eb;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.btn-ghost:hover {
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.btn-outline-danger {
+  background: transparent;
+  color: #fb7185;
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.btn-outline-danger:hover {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+/* ===== BADGE MODO LECTURA ===== */
+.inventario-readonly-badge {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  color: #9ca3af;
+}
+
+.acciones-lectura {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  opacity: 0.85;
+}
+
+/* ===== TARJETAS RESUMEN ===== */
+.inventario-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.inventario-card {
+  border-radius: 18px;
+  padding: 16px 18px;
+  background: radial-gradient(circle at top left, #0f172a, #020617);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inventario-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9ca3af;
+}
+
+.inventario-card-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.inventario-card-helper {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ===== FORMULARIO DE ALTA ===== */
+.inventario-form-card {
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+  padding: 16px 18px 20px;
+  margin-top: -10px;
+}
+
+.inventario-form-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ===== TABLA ===== */
+.inventario-table-card {
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inventario-table-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.inventario-table-header p {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.inventario-table-wrapper {
+  border-radius: 14px;
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  overflow: hidden;
+  background: #020617;
+}
+
+.inventario-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.inventario-table thead {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.inventario-table th,
+.inventario-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+}
+
+.inventario-table th {
+  font-weight: 500;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.inventario-table tbody tr:hover {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.th-actions,
+.td-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.inventario-empty {
+  text-align: center;
+  padding: 18px 0;
+  color: #6b7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 960px) {
+  .inventario-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .inventario-sidebar {
+    display: none;
+  }
+
+  .inventario-main {
+    padding: 16px;
+  }
+
+  .inventario-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .inventario-header {
+    flex-direction: column;
+  }
+
+  .inventario-header-actions {
+    width: 100%;
+  }
+
+  .inventario-search {
+    flex: 1;
+  }
+
+  .inventario-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .inventario-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .inventario-table {
+    min-width: 640px;
+  }
+}
+
+/* ============================================================
+   FORMULARIO ESTILIZADO
+   ============================================================ */
+
+.form-panel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 10px 4px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.form-input {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+}
+
+.form-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 6px;
+}
+
+/* === BOTÓN LOGIN / LOGOUT CON ESTILO UNIFICADO === */
+.app-nav .btn {
+  font-size: 0.9rem;
+  padding: 7px 16px;
+}
+
+.app-nav .btn-primary {
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #020617;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.18);
+  transition: all 0.18s ease-out;
+}
+
+.app-nav .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(56, 189, 248, 0.28);
+}
+

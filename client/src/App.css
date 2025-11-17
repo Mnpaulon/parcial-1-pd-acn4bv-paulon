@@ -1,0 +1,156 @@
+
+/* ============================================================
+   ESTILOS GLOBALES
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #020617; /* fondo oscuro */
+  color: #e5e7eb;      /* gris claro */
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================================================
+   HEADER GLOBAL
+   ============================================================ */
+
+.app-header {
+  background: #020617;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.app-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 0, #38bdf8, #22c55e);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.6);
+}
+
+.app-logo-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-nav-link {
+  font-size: 0.9rem;
+  color: #a855f7;
+  padding: 6px 4px;
+  border-radius: 999px;
+}
+
+.app-nav-link:hover {
+  color: #c4b5fd;
+}
+
+.app-nav-logout {
+  font-size: 0.85rem;
+  padding-inline: 16px;
+}
+
+/* Contenedor principal (debajo del header) */
+.app-main {
+  min-height: calc(100vh - 60px);
+}
+
+/* ============================================================
+   PANTALLA DE LOGIN (centrada)
+   ============================================================ */
+
+.auth-page {
+  min-height: calc(100vh - 60px); /* resto el header */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at top left, #0f172a, #020617);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 26px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+}
+
+.auth-title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.auth-subtitle {
+  margin: 0 0 18px;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.auth-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.auth-input {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 8px 10px;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+}
+
+.auth-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
