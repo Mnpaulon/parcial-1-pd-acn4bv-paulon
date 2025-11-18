@@ -1,5 +1,5 @@
 
-// client/src/context/AuthContext.jsx
+
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
 
     const data = await res.json().catch(() => null);
 
-    console.log("LOGIN status:", res.status, "body:", data); // 👈 para debug
+    console.log("LOGIN status:", res.status, "body:", data); // para debug
 
     if (!res.ok) {
       // acá mostramos el error real que manda el backend

@@ -1,5 +1,5 @@
 
-// client/src/App.jsx
+
 import { Routes, Route, Link } from "react-router-dom";
 import InventarioPage from "./pages/InventarioPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";

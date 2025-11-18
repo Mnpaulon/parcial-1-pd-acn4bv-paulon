@@ -1,5 +1,5 @@
 
-// client/src/pages/InventarioPage.jsx
+
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import ProductoForm from "../components/ProductoForm.jsx";

@@ -1,5 +1,5 @@
 
-// client/src/components/ProductoForm.jsx
+
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 

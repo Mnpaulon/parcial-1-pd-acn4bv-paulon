@@ -1,7 +1,7 @@
 
-/* ============================================================
-   ESTILOS GLOBALES
-   ============================================================ */
+
+/* ESTILOS GLOBALES */
+
 
 *,
 *::before,
@@ -13,8 +13,8 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  background: #020617; /* fondo oscuro */
-  color: #e5e7eb;      /* gris claro */
+  background: #020617; 
+  color: #e5e7eb;      
 }
 
 a {
@@ -22,9 +22,9 @@ a {
   color: inherit;
 }
 
-/* ============================================================
-   HEADER GLOBAL
-   ============================================================ */
+
+/* HEADER GLOBAL */
+
 
 .app-header {
   background: #020617;
@@ -86,9 +86,9 @@ a {
   min-height: calc(100vh - 60px);
 }
 
-/* ============================================================
-   PANTALLA DE LOGIN (centrada)
-   ============================================================ */
+
+/* PANTALLA DE LOGIN (centrada) */
+
 
 .auth-page {
   min-height: calc(100vh - 60px); /* resto el header */
