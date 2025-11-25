@@ -6,98 +6,153 @@ import { useAuth } from "../context/AuthContext.jsx";
 export default function ProductoEditar({ producto, onUpdated, onCancel }) {
   const { token } = useAuth();
 
-  const [form, setForm] = useState({
-    nombre: producto.nombre ?? "",
-    categoria: producto.categoria ?? "",
-    stock: producto.stock ?? "",
-    precio: producto.precio ?? "",
-  });
+  const [nombre, setNombre] = useState(producto?.nombre ?? "");
+  const [categoria, setCategoria] = useState(producto?.categoria ?? "");
+  const [precio, setPrecio] = useState(String(producto?.precio ?? ""));
+  const [stock, setStock] = useState(String(producto?.stock ?? ""));
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  function validarCampos() {
+    const errores = [];
+
+    if (!nombre.trim()) errores.push("El nombre es obligatorio.");
+    if (!categoria.trim()) errores.push("La categoría es obligatoria.");
+
+    const precioNum = Number(precio);
+    if (!Number.isFinite(precioNum) || precioNum <= 0) {
+      errores.push("El precio debe ser mayor a 0.");
+    }
+
+    const stockNum = Number(stock);
+    if (!Number.isInteger(stockNum) || stockNum <= 0) {
+      errores.push("El stock debe ser un entero mayor a 0.");
+    }
+
+    if (errores.length) {
+      setError(errores.join(" "));
+      return false;
+    }
+
+    return true;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setError(null);
 
-    const res = await fetch(
-      `http://localhost:3000/api/productos/${producto.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          categoria: form.categoria,
-          stock: Number(form.stock),
-          precio: Number(form.precio),
-        }),
+    if (!validarCampos()) return;
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(
+        `http://localhost:3000/api/productos/${producto.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            nombre: nombre.trim(),
+            categoria: categoria.trim(),
+            precio: Number(precio),
+            stock: Number(stock),
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Error al actualizar producto.");
       }
-    );
 
-    const data = await res.json();
-    if (onUpdated) onUpdated(data);
+      const actualizado = await res.json();
+      if (onUpdated) onUpdated(actualizado);
+    } catch (err) {
+      console.error("Error al actualizar producto:", err);
+      setError(err.message || "No se pudo actualizar el producto.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <form className="form-panel" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="form-panel">
       <div className="form-group">
-        <label className="form-label">Nombre</label>
-        <input
-          className="form-input"
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          required
-        />
+        <label className="form-label">
+          Nombre
+          <input
+            type="text"
+            className="form-input"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          />
+        </label>
       </div>
 
       <div className="form-group">
-        <label className="form-label">Categoría</label>
-        <input
-          className="form-input"
-          name="categoria"
-          value={form.categoria}
-          onChange={handleChange}
-          required
-        />
+        <label className="form-label">
+          Categoría
+          <input
+            type="text"
+            className="form-input"
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+          />
+        </label>
       </div>
 
       <div className="form-group">
-        <label className="form-label">Stock</label>
-        <input
-          type="number"
-          className="form-input"
-          name="stock"
-          value={form.stock}
-          onChange={handleChange}
-          required
-        />
+        <label className="form-label">
+          Precio
+          <input
+            type="number"
+            className="form-input"
+            value={precio}
+            onChange={(e) => setPrecio(e.target.value)}
+            min="1"
+            step="0.01"
+          />
+        </label>
       </div>
 
       <div className="form-group">
-        <label className="form-label">Precio</label>
-        <input
-          type="number"
-          className="form-input"
-          name="precio"
-          value={form.precio}
-          onChange={handleChange}
-          required
-        />
+        <label className="form-label">
+          Stock
+          <input
+            type="number"
+            className="form-input"
+            value={stock}
+            onChange={(e) => setStock(e.target.value)}
+            min="1"
+            step="1"
+          />
+        </label>
       </div>
+
+      {error && (
+        <div className="form-error">
+          {error}
+        </div>
+      )}
 
       <div className="form-actions">
-        <button type="button" className="btn btn-ghost" onClick={onCancel}>
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={onCancel}
+          disabled={loading}
+        >
           Cancelar
         </button>
-        <button type="submit" className="btn btn-primary">
-          Guardar cambios
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={loading}
+        >
+          {loading ? "Guardando..." : "Guardar cambios"}
         </button>
       </div>
     </form>

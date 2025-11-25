@@ -1,5 +1,5 @@
 
-// client/src/pages/LoginPage.jsx
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -48,7 +48,7 @@ export default function LoginPage() {
           Ingresá con tu usuario y contraseña para modificar el inventario.
         </p>
 
-        {/* Mensaje de error del backend (authError) o local */}
+        {/* Mensaje de error del backend o local*/}
         {errorToShow && (
           <div className="login-error">
             {errorToShow}

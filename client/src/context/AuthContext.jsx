@@ -1,5 +1,5 @@
 
-// client/src/context/AuthContext.jsx
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext(null);
@@ -17,9 +17,14 @@ export function AuthProvider({ children }) {
     if (storedToken && storedUser) {
       setToken(storedToken);
       try {
-        setUser(JSON.parse(storedUser));
-      } catch {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (err) {
+        console.error("Error al parsear usuario de localStorage:", err);
         setUser(null);
+        setToken(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
   }, []);
@@ -64,12 +69,18 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("user");
   }
 
+  // rol (con Opción A: solo "admin" y "usuario")
+  const isAdmin = user?.role === "admin";
+  const isUsuario = user?.role === "usuario";
+
   const value = {
     user,
     token,
     authError,
     login,
     logout,
+    isAdmin,
+    isUsuario,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

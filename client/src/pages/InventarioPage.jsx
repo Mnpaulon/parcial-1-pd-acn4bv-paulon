@@ -1,5 +1,5 @@
 
-// client/src/pages/InventarioPage.jsx
+
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import ProductoForm from "../components/ProductoForm.jsx";
@@ -12,7 +12,7 @@ export default function InventarioPage() {
   const [editando, setEditando] = useState(null);
   const [filtroNombre, setFiltroNombre] = useState("");
   const [mostrarFormNuevo, setMostrarFormNuevo] = useState(false);
-  const [mensaje, setMensaje] = useState(null); // { tipo: 'ok' | 'error', texto: string }
+  const [mensaje, setMensaje] = useState(null);
 
   // pestaña activa: "productos" | "usuarios"
   const [activeTab, setActiveTab] = useState("productos");
@@ -26,9 +26,9 @@ export default function InventarioPage() {
   const isLoggedIn = !!user;
   const isAdmin = isLoggedIn && user.role === "admin";
 
-  // ------------------------------
+  
   // Mensajes globales
-  // ------------------------------
+  
   function mostrarMensaje(tipo, texto) {
     setMensaje({ tipo, texto });
     setTimeout(() => {
@@ -36,9 +36,9 @@ export default function InventarioPage() {
     }, 3000);
   }
 
-  // ------------------------------
+  
   // Productos
-  // ------------------------------
+  
   async function cargarProductos() {
     try {
       const res = await fetch("http://localhost:3000/api/productos");
@@ -110,9 +110,9 @@ export default function InventarioPage() {
     return texto.includes(filtroNombre.toLowerCase());
   });
 
-  // ------------------------------
+  
   // Gestión de usuarios
-  // ------------------------------
+  
   async function cargarUsuarios() {
     if (!isAdmin) return;
 
@@ -139,6 +139,7 @@ export default function InventarioPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           username: nuevoUsername,
@@ -182,6 +183,9 @@ export default function InventarioPage() {
     try {
       const res = await fetch(`http://localhost:3000/api/usuarios/${id}`, {
         method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!res.ok) {
@@ -197,9 +201,9 @@ export default function InventarioPage() {
     }
   }
 
-  // ------------------------------
-  // Effects
-  // ------------------------------
+  
+  // Efectos
+  
   useEffect(() => {
     cargarProductos();
   }, []);
@@ -218,9 +222,9 @@ export default function InventarioPage() {
     }
   }, [isLoggedIn, activeTab]);
 
-  // ------------------------------
+  
   // Render
-  // ------------------------------
+  
   return (
     <div className="inventario-layout">
       {/* SIDEBAR */}
@@ -287,7 +291,7 @@ export default function InventarioPage() {
             </div>
           )}
 
-          {/* ================== TAB PRODUCTOS ================== */}
+          {/*  TABLA PRODUCTOS  */}
           {activeTab === "productos" && (
             <>
               <header className="inventario-header">
@@ -467,7 +471,7 @@ export default function InventarioPage() {
             </>
           )}
 
-          {/* ================== TAB USUARIOS (ADMIN) ================== */}
+          {/* TABLA USUARIOS (ADMIN)  */}
           {activeTab === "usuarios" && isAdmin && (
             <section className="inventario-users-card">
               <div className="inventario-users-header">
@@ -516,8 +520,7 @@ export default function InventarioPage() {
                       onChange={(e) => setNuevoRol(e.target.value)}
                     >
                       <option value="admin">Admin</option>
-                      <option value="editor">Editor</option>
-                      <option value="lector">Lector</option>
+                      <option value="usuario">Usuario</option>
                     </select>
                   </label>
                 </div>
@@ -589,3 +592,4 @@ export default function InventarioPage() {
     </div>
   );
 }
+

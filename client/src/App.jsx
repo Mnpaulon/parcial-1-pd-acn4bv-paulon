@@ -1,6 +1,6 @@
 
-// client/src/App.jsx
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+// src/App.jsx
+import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import InventarioPage from "./pages/InventarioPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
@@ -14,7 +14,7 @@ function AppHeader() {
     logout();
   };
 
-  // estamos en la ruta /login ?
+  // ¿Estamos en la ruta /login?
   const isLoginPage = location.pathname === "/login";
 
   return (
@@ -35,7 +35,7 @@ function AppHeader() {
             </Link>
           )}
 
-          {/* Cuando SÍ estoy logueado → solo mostrar Logout */}
+          {/* Cuando SÍ estoy logueado → mostrar Logout */}
           {user && (
             <button
               type="button"
@@ -51,15 +51,46 @@ function AppHeader() {
   );
 }
 
+// Componente para proteger rutas: solo entra si hay user en el contexto
+function PrivateRoute({ children }) {
+  const { user } = useAuth();
+
+  if (!user) {
+    // Si no hay usuario logueado → mandar a /login
+    return <Navigate to="/login" replace />;
+  }
+
+  // Si hay usuario → renderiza la página protegida
+  return children;
+}
+
 export default function App() {
   return (
     <>
       <AppHeader />
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<InventarioPage />} />
-          <Route path="/inventario" element={<InventarioPage />} />
+          {/* Raíz: redirige a /inventario (que está protegido) */}
+          <Route path="/" element={<Navigate to="/inventario" replace />} />
+
+          {/* Inventario protegido: requiere estar logueado */}
+          <Route
+            path="/inventario"
+            element={
+              <PrivateRoute>
+                <InventarioPage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Login siempre público */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/*Ruta para cualquier otra URL → login o inventario */}
+          <Route
+            path="*"
+            element={<Navigate to="/inventario" replace />}
+          />
         </Routes>
       </main>
     </>
