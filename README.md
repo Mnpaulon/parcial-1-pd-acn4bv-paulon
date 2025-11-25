@@ -26,7 +26,19 @@ El proyecto funciona como un **panel administrativo real**, permitiendo gestiona
 
 ---
 
-#  2. Arquitectura del Sistema
+
+2. Estructura del Proyecto
+
+parcial-2-pd-acn4bv-paulon/
+├── client/       ← FRONTEND React (no contiene datos persistentes)
+├── server/       ← BACKEND Node (acá viven los JSON de datos reales)
+│   ├── productos.json   ← Persistencia real del sistema
+│   └── usuarios.json    ← Persistencia real del sistema
+├── src/          ← TP1 (versión previa del proyecto, sin backend)
+└── docs/         ← Informes y documentación
+
+
+#  3. Arquitectura del Sistema
 
 ## 🖥 Frontend (React)
 - React + Vite  
@@ -73,7 +85,7 @@ DELETE /api/usuarios/:id (solo admin)
 
 ---
 
-#  3. Sistema de Roles (Nuevo en TP2)
+#  4. Sistema de Roles (Nuevo en TP2)
 
 Se eliminaron roles innecesarios y se estableció un esquema simple y claro:
 
@@ -93,9 +105,9 @@ Se eliminaron roles innecesarios y se estableció un esquema simple y claro:
 
 ---
 
-#  4. Funcionalidades Implementadas
+#  5. Funcionalidades Implementadas
 
-##  4.1 Gestión de Productos (CRUD)
+##  5.1 Gestión de Productos (CRUD)
 - Alta de productos  
 - Edición individual  
 - Eliminación con confirmación  
@@ -109,7 +121,7 @@ Toda la edición requiere estar logueado.
 
 ---
 
-##  4.2 Gestión de Usuarios (Solo Admin)
+##  5.2 Gestión de Usuarios (Solo Admin)
 Incluye:
 
 - Listado completo de usuarios  
@@ -120,7 +132,7 @@ Incluye:
 
 ---
 
-##  4.3 Login y Autenticación
+##  5.3 Login y Autenticación
 - Login con username + password  
 - Validación en backend  
 - JWT almacenado en localStorage  
@@ -128,7 +140,7 @@ Incluye:
 
 ---
 
-# 5. Modelos de Datos
+# 6. Modelos de Datos
 
 ## Usuario
 
@@ -148,7 +160,7 @@ Producto
   "stock": 8
 }
 
- 6. Seguridad Implementada
+ 7. Seguridad Implementada
 
 Autenticación JWT en backend
 Validación de token en cada request
@@ -157,7 +169,7 @@ Validación de roles (soloAdmin)
 Restricción de acciones peligrosas
 Limpieza de roles obsoletos (lector/editor)
 
-7. Interfaz y Experiencia de Usuario
+8. Interfaz y Experiencia de Usuario
 
 Sidebar responsive
 Pestañas dinámicas
@@ -167,7 +179,7 @@ Diseño claro y moderno
 Indicadores de inventario
 Modo lectura para usuarios no logueados
 
- 8. Conclusión
+ 9. Conclusión
 
 El TP2 llevó el proyecto inicial a un nivel profesional:
 
@@ -177,7 +189,7 @@ Se desarrolló un panel moderno y seguro.
 Se aplicaron conceptos de frontend, backend, seguridad y arquitectura.
 El sistema queda preparado para futuras ampliaciones, como base de datos real, hash de contraseñas y módulos adicionales.
 
-9. Mejoras Futuras Posibles
+10. Mejoras Futuras Posibles
 
 Hash de contraseñas (bcrypt)
 Migración a MongoDB o PostgreSQL
