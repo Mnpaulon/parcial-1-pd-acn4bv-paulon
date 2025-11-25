@@ -1,5 +1,4 @@
 
-// server/usuarios.routes.js
 import { Router } from "express";
 import {
   getUsuarios,
@@ -7,15 +6,19 @@ import {
   eliminarUsuario,
 } from "./usuarios.controller.js";
 
+import { verificarToken, soloAdmin } from "./auth.middleware.js";
+
 const router = Router();
 
-// GET /api/usuarios
-router.get("/", getUsuarios);
+// Todas las rutas de usuarios SOLO las puede usar un admin
 
-// POST /api/usuarios
-router.post("/", crearUsuario);
+// GET /api/usuarios  → listar usuarios
+router.get("/", verificarToken, soloAdmin, getUsuarios);
 
-// DELETE /api/usuarios/:id
-router.delete("/:id", eliminarUsuario);
+// POST /api/usuarios → crear usuario
+router.post("/", verificarToken, soloAdmin, crearUsuario);
+
+// DELETE /api/usuarios/:id → eliminar usuario
+router.delete("/:id", verificarToken, soloAdmin, eliminarUsuario);
 
 export default router;

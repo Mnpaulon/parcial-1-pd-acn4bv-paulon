@@ -1,13 +1,13 @@
 
-// server/productos.controller.js
+
 import fs from "fs/promises";
 
 // Archivo JSON de productos
 const DATA_FILE = new URL("./productos.json", import.meta.url);
 
-// ------------------------------
+
 // FUNCIONES AUXILIARES
-// ------------------------------
+
 async function leerProductos() {
   const data = await fs.readFile(DATA_FILE, "utf-8");
   return JSON.parse(data);
@@ -17,28 +17,32 @@ async function guardarProductos(lista) {
   await fs.writeFile(DATA_FILE, JSON.stringify(lista, null, 2));
 }
 
-// ------------------------------
+
 // VALIDACIÓN
-// ------------------------------
+
 function validarProducto({ nombre, precio, categoria, stock }) {
   const errores = [];
-  if (!nombre || !String(nombre).trim()) errores.push("Nombre es obligatorio");
-  if (!categoria || !String(categoria).trim()) errores.push("Categoría es obligatoria");
+
+  if (!nombre || !String(nombre).trim())
+    errores.push("Nombre es obligatorio");
+
+  if (!categoria || !String(categoria).trim())
+    errores.push("Categoría es obligatoria");
 
   const pr = Number(precio);
-  if (!Number.isFinite(pr) || pr <= 0) errores.push("El precio debe ser mayor a 0");
+  if (!Number.isFinite(pr) || pr > 0)
+    errores.push("El precio debe ser un número válido (>= 0)");
 
   const st = Number(stock);
-  if (!Number.isInteger(st) || st <= 0) errores.push("El stock debe ser un entero > 0");
+  if (!Number.isInteger(st) || st >= 0)
+    errores.push("El stock debe ser un número entero >= 0");
 
   return errores;
 }
 
-// ------------------------------
-// CONTROLLERS
-// ------------------------------
 
 // GET /api/productos
+
 export async function getProductos(req, res) {
   try {
     const productos = await leerProductos();
@@ -49,21 +53,9 @@ export async function getProductos(req, res) {
   }
 }
 
-// GET /api/productos/:id
-export async function getProductoPorId(req, res) {
-  try {
-    const id = Number(req.params.id);
-    const productos = await leerProductos();
-    const prod = productos.find((p) => p.id === id);
-    if (!prod) return res.status(404).json({ error: "Producto no encontrado" });
-    res.json(prod);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error al leer producto" });
-  }
-}
 
 // POST /api/productos
+
 export async function crearProducto(req, res) {
   try {
     const errores = validarProducto(req.body);
@@ -74,17 +66,20 @@ export async function crearProducto(req, res) {
     const { nombre, precio, categoria, stock } = req.body;
 
     const productos = await leerProductos();
-    const nextId = productos.length ? Math.max(...productos.map((p) => p.id)) + 1 : 1;
+
+    const nextId = productos.length
+      ? Math.max(...productos.map((p) => p.id)) + 1
+      : 1;
 
     const nuevo = {
       id: nextId,
       nombre: String(nombre).trim(),
-      precio: Number(precio),
       categoria: String(categoria).trim(),
+      precio: Number(precio),
       stock: Number(stock),
     };
 
-    productos.push(nuevo);
+   productos.push(nuevo);
     await guardarProductos(productos);
 
     res.status(201).json(nuevo);
@@ -94,7 +89,9 @@ export async function crearProducto(req, res) {
   }
 }
 
-// PUT /api/productos/:id  (si lo querés usar)
+
+// PUT /api/productos/:id
+
 export async function actualizarProducto(req, res) {
   try {
     const id = Number(req.params.id);
@@ -107,9 +104,18 @@ export async function actualizarProducto(req, res) {
 
     const productos = await leerProductos();
     const index = productos.findIndex((p) => p.id === id);
-    if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
 
-    productos[index] = { id, nombre, precio, categoria, stock };
+    if (index === -1)
+      return res.status(404).json({ error: "Producto no encontrado" });
+
+    productos[index] = {
+      id,
+      nombre: String(nombre).trim(),
+      categoria: String(categoria).trim(),
+      precio: Number(precio),
+      stock: Number(stock),
+    };
+
     await guardarProductos(productos);
 
     res.json(productos[index]);
@@ -119,64 +125,9 @@ export async function actualizarProducto(req, res) {
   }
 }
 
-// PATCH /api/productos/:id
-export async function actualizarParcialProducto(req, res) {
-  try {
-    const id = Number(req.params.id);
-    const body = req.body ?? {};
-
-    const permitidos = ["nombre", "precio", "categoria", "stock"];
-    const campos = Object.keys(body).filter((k) => permitidos.includes(k));
-
-    if (campos.length === 0) {
-      return res.status(400).json({ error: "Nada para actualizar" });
-    }
-
-    const productos = await leerProductos();
-    const index = productos.findIndex((p) => p.id === id);
-    if (index === -1) return res.status(404).json({ error: "Producto no encontrado" });
-
-    const actual = { ...productos[index] };
-
-    if ("nombre" in body) {
-      const v = String(body.nombre).trim();
-      if (!v) return res.status(400).json({ error: "Nombre es obligatorio" });
-      actual.nombre = v;
-    }
-
-    if ("categoria" in body) {
-      const v = String(body.categoria).trim();
-      if (!v) return res.status(400).json({ error: "Categoría es obligatoria" });
-      actual.categoria = v;
-    }
-
-    if ("precio" in body) {
-      const pr = Number(body.precio);
-      if (!Number.isFinite(pr) || pr <= 0) {
-        return res.status(400).json({ error: "El precio debe ser mayor a 0" });
-      }
-      actual.precio = pr;
-    }
-
-    if ("stock" in body) {
-      const st = Number(body.stock);
-      if (!Number.isInteger(st) || st <= 0) {
-        return res.status(400).json({ error: "El stock debe ser un entero > 0" });
-      }
-      actual.stock = st;
-    }
-
-    productos[index] = actual;
-    await guardarProductos(productos);
-
-    res.json(actual);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error al actualizar parcialmente" });
-  }
-}
 
 // DELETE /api/productos/:id
+
 export async function eliminarProducto(req, res) {
   const id = Number(req.params.id);
 
@@ -186,7 +137,6 @@ export async function eliminarProducto(req, res) {
 
   try {
     const productos = await leerProductos();
-
     const index = productos.findIndex((p) => p.id === id);
 
     if (index === -1) {

@@ -1,5 +1,4 @@
 
-// server/auth.middleware.js
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "./auth.controller.js";
 
@@ -7,7 +6,7 @@ import { JWT_SECRET } from "./auth.controller.js";
 export function verificarToken(req, res, next) {
   const authHeader = req.headers.authorization || "";
 
-  // Esperamos algo tipo: "Bearer <token>"
+  // Esperamos algo tipo: "Bearer token"
   const [scheme, token] = authHeader.split(" ");
 
   if (!token || scheme !== "Bearer") {
@@ -19,6 +18,7 @@ export function verificarToken(req, res, next) {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     // Guardamos los datos del usuario en la request
+    // Ej: { id, username, role }
     req.user = payload;
     next();
   } catch (err) {
@@ -29,7 +29,7 @@ export function verificarToken(req, res, next) {
   }
 }
 
-// (opcional) Middleware para rutas solo de admin
+// Middleware para rutas solo de admin
 export function soloAdmin(req, res, next) {
   if (!req.user || req.user.role !== "admin") {
     return res
@@ -38,3 +38,5 @@ export function soloAdmin(req, res, next) {
   }
   next();
 }
+
+

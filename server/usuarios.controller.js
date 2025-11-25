@@ -1,92 +1,101 @@
 
-// server/usuarios.controller.js
+
 import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Archivo donde guardamos los usuarios
-const USERS_FILE = new URL("./usuarios.json", import.meta.url);
+// Resolver ruta a usuarios.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DATA_FILE = path.join(__dirname, "usuarios.json");
 
+// Leer archivo JSON
 async function leerUsuarios() {
-  const data = await fs.readFile(USERS_FILE, "utf-8");
+  const data = await fs.readFile(DATA_FILE, "utf-8");
   return JSON.parse(data);
 }
 
+// Guardar archivo JSON
 async function guardarUsuarios(lista) {
-  await fs.writeFile(USERS_FILE, JSON.stringify(lista, null, 2));
+  await fs.writeFile(DATA_FILE, JSON.stringify(lista, null, 2));
 }
 
 // GET /api/usuarios
+
 export async function getUsuarios(req, res) {
   try {
     const usuarios = await leerUsuarios();
-    // No mandamos la contraseña al front
-    const sinPassword = usuarios.map(({ password, ...resto }) => resto);
-    res.json(sinPassword);
-  } catch (err) {
-    console.error("Error al leer usuarios:", err);
-    res
-      .status(500)
-      .json({ error: "No se pudieron obtener los usuarios" });
+    res.json(usuarios);
+  } catch (error) {
+    console.error("Error cargando usuarios:", error);
+    res.status(500).json({ error: "No se pudieron cargar los usuarios" });
   }
 }
 
+
 // POST /api/usuarios
+
 export async function crearUsuario(req, res) {
-  const { username, password, role } = req.body || {};
-
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ error: "Usuario y contraseña son obligatorios" });
-  }
-
   try {
-    const usuarios = await leerUsuarios();
+    const { username, password, role } = req.body;
 
-    // Evitar duplicados por username
-    if (usuarios.some((u) => u.username === username)) {
+    if (!username || !password) {
       return res
         .status(400)
-        .json({ error: "Ya existe un usuario con ese nombre" });
+        .json({ error: "Usuario y contraseña son obligatorios" });
+    }
+
+    const usuarios = await leerUsuarios();
+
+    // Evitar usuarios duplicados
+    if (usuarios.some((u) => u.username === username)) {
+      return res.status(400).json({ error: "El usuario ya existe" });
     }
 
     const nuevo = {
-      id: usuarios.length
-        ? Math.max(...usuarios.map((u) => u.id)) + 1
-        : 1,
+      id: Date.now(),
       username,
       password,
-      role: role || "editor",
+      role: role?.toLowerCase() || "lector",
     };
 
     usuarios.push(nuevo);
     await guardarUsuarios(usuarios);
 
-    const { password: _, ...sinPassword } = nuevo;
-    res.status(201).json(sinPassword);
-  } catch (err) {
-    console.error("Error al crear usuario:", err);
+    res.status(201).json(nuevo);
+  } catch (error) {
+    console.error("Error creando usuario:", error);
     res.status(500).json({ error: "No se pudo crear el usuario" });
   }
 }
 
+
 // DELETE /api/usuarios/:id
+
 export async function eliminarUsuario(req, res) {
-  const id = Number(req.params.id);
-
   try {
+    const id = Number(req.params.id);
     const usuarios = await leerUsuarios();
-    const existe = usuarios.some((u) => u.id === id);
 
+    const existe = usuarios.find((u) => u.id === id);
     if (!existe) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    const filtrados = usuarios.filter((u) => u.id !== id);
-    await guardarUsuarios(filtrados);
+    // NO permitir eliminar al único admin
+    const admins = usuarios.filter((u) => u.role === "admin");
+    if (admins.length === 1 && existe.role === "admin") {
+      return res
+        .status(400)
+        .json({ error: "No se puede eliminar el único usuario administrador" });
+    }
 
-    res.json({ mensaje: "Usuario eliminado correctamente" });
-  } catch (err) {
-    console.error("Error al eliminar usuario:", err);
+    const listaActualizada = usuarios.filter((u) => u.id !== id);
+    await guardarUsuarios(listaActualizada);
+
+    res.json({ mensaje: "Usuario eliminado" });
+  } catch (error) {
+    console.error("Error eliminando usuario:", error);
     res.status(500).json({ error: "No se pudo eliminar el usuario" });
   }
 }

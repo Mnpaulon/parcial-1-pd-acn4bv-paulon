@@ -33,33 +33,5 @@
     "precio": 5000,
     "categoria": "periferico",
     "stock": 15
-  },
-  {
-    "id": 8,
-    "nombre": "Monitor pro tuser10",
-    "precio": 15000,
-    "categoria": "periferico",
-    "stock": 15
-  },
-  {
-    "id": 9,
-    "nombre": "Monitor Samsung",
-    "precio": 23000,
-    "categoria": "periferico",
-    "stock": 15
-  },
-  {
-    "id": 10,
-    "nombre": "monitor lg",
-    "precio": 6500,
-    "categoria": "periferico",
-    "stock": 8
-  },
-  {
-    "id": 11,
-    "nombre": "paid mouse f5",
-    "precio": 2500,
-    "categoria": "periferico",
-    "stock": 50
   }
 ]

@@ -6,15 +6,9 @@
     "role": "admin"
   },
   {
-    "id": 2,
-    "username": "nicolas perez",
-    "password": "4789",
-    "role": "editor"
-  },
-  {
-    "id": 3,
-    "username": "vero",
-    "password": "4569",
-    "role": "admin"
+    "id": 1764110254772,
+    "username": "tito",
+    "password": "7896",
+    "role": "usuario"
   }
 ]

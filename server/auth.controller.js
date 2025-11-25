@@ -1,5 +1,5 @@
 
-// server/auth.controller.js
+
 import jwt from "jsonwebtoken";
 import fs from "fs/promises";
 import path from "path";
@@ -19,9 +19,9 @@ async function leerUsuarios() {
   return JSON.parse(data);
 }
 
-// ------------------------------
+
 // LOGIN: POST /api/login
-// ------------------------------
+
 export async function login(req, res) {
   try {
     const { username, password } = req.body || {};
