@@ -13,31 +13,67 @@ export default function InventarioPage() {
   const [filtroNombre, setFiltroNombre] = useState("");
   const [mostrarFormNuevo, setMostrarFormNuevo] = useState(false);
 
+  const [mensaje, setMensaje] = useState(null); // { tipo: 'ok' | 'error', texto: string }
+
   const isLoggedIn = !!user;
+
+  function mostrarMensaje(tipo, texto) {
+    setMensaje({ tipo, texto });
+    // que el mensaje se borre solo después de 3s
+    setTimeout(() => {
+      setMensaje(null);
+    }, 3000);
+  }
 
   // GET de productos (no requiere token)
   async function cargarProductos() {
-    const res = await fetch("http://localhost:3000/api/productos");
-    const data = await res.json();
-    setProductos(data);
+    try {
+      const res = await fetch("http://localhost:3000/api/productos");
+      const data = await res.json();
+      setProductos(data);
+    } catch (err) {
+      console.error("Error al cargar productos:", err);
+      mostrarMensaje("error", "No se pudieron cargar los productos.");
+    }
   }
 
   // DELETE (requiere token)
   async function eliminar(id) {
-    await fetch(`http://localhost:3000/api/productos/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    if (!isLoggedIn) {
+      mostrarMensaje("error", "Debes iniciar sesión para eliminar productos.");
+      return;
+    }
 
-    cargarProductos();
+    const confirmar = window.confirm(
+      "¿Estás seguro de que querés eliminar este producto?"
+    );
+    if (!confirmar) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/productos/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al eliminar producto");
+      }
+
+      await cargarProductos();
+      mostrarMensaje("ok", "Producto eliminado correctamente.");
+    } catch (err) {
+      console.error(err);
+      mostrarMensaje("error", "No se pudo eliminar el producto.");
+    }
   }
 
   // cuando se crea un producto nuevo desde el form
   function handleCreated(nuevo) {
     setProductos((prev) => [...prev, nuevo]);
     setMostrarFormNuevo(false);
+    mostrarMensaje("ok", "Producto creado correctamente.");
   }
 
   // cuando se actualiza un producto desde el form de edición
@@ -46,6 +82,7 @@ export default function InventarioPage() {
       prev.map((p) => (p.id === actualizado.id ? actualizado : p))
     );
     setEditando(null);
+    mostrarMensaje("ok", "Producto actualizado correctamente.");
   }
 
   // acciones de UI
@@ -98,13 +135,27 @@ export default function InventarioPage() {
       {/* CONTENIDO PRINCIPAL */}
       <main className="inventario-main">
         <div className="inventario-container">
+          {/* MENSAJE GLOBAL */}
+          {mensaje && (
+            <div
+              className={`inventario-alert ${
+                mensaje.tipo === "ok"
+                  ? "inventario-alert--ok"
+                  : "inventario-alert--error"
+              }`}
+            >
+              {mensaje.texto}
+            </div>
+          )}
+
           {/* HEADER */}
           <header className="inventario-header">
             <div>
               <p className="inventario-kicker">Panel de control</p>
               <h1 className="inventario-title">Gestión de inventario</h1>
               <p className="inventario-subtitle">
-                Visualizá tus productos.
+                Visualizá tus productos. Para modificarlos necesitás iniciar
+                sesión.
               </p>
             </div>
 
@@ -114,7 +165,7 @@ export default function InventarioPage() {
                 <span className="inventario-search-icon">🔍</span>
                 <input
                   type="text"
-                  placeholder="Buscar por nombre o código..."
+                  placeholder="Buscar por nombre..."
                   value={filtroNombre}
                   onChange={(e) => setFiltroNombre(e.target.value)}
                 />
@@ -259,7 +310,7 @@ export default function InventarioPage() {
 
                   {productosFiltrados.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="inventario-empty">
+                      <td colSpan={5} className="inventario-empty">
                         No se encontraron productos para el criterio de
                         búsqueda.
                       </td>

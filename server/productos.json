@@ -54,5 +54,19 @@
     "precio": 6500,
     "categoria": "periferico",
     "stock": 8
+  },
+  {
+    "id": 11,
+    "nombre": "paid mouse f5",
+    "precio": 2500,
+    "categoria": "periferico",
+    "stock": 50
+  },
+  {
+    "id": 12,
+    "nombre": "ipad 5t",
+    "precio": 162000,
+    "categoria": "tecnologia",
+    "stock": 10
   }
 ]

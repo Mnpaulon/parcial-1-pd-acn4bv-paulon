@@ -1,6 +1,6 @@
 
-
-import { Routes, Route, Link } from "react-router-dom";
+// client/src/App.jsx
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 import InventarioPage from "./pages/InventarioPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
@@ -8,10 +8,14 @@ import "./App.css";
 
 function AppHeader() {
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
   };
+
+  // estamos en la ruta /login ?
+  const isLoginPage = location.pathname === "/login";
 
   return (
     <header className="app-header">
@@ -23,8 +27,9 @@ function AppHeader() {
         </Link>
 
         <nav className="app-nav">
-          {/* Cuando NO estoy logueado → solo mostrar Login */}
-          {!user && (
+          {/* Cuando NO estoy logueado → mostrar Login
+              PERO NO si ya estoy en /login */}
+          {!user && !isLoginPage && (
             <Link to="/login" className="btn btn-primary app-nav-logout">
               Login
             </Link>
@@ -35,7 +40,8 @@ function AppHeader() {
             <button
               type="button"
               className="btn btn-primary app-nav-logout"
-              onClick={handleLogout}>
+              onClick={handleLogout}
+            >
               Logout
             </button>
           )}

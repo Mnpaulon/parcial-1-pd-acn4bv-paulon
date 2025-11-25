@@ -422,9 +422,7 @@
   }
 }
 
-/* ============================================================
-   FORMULARIO ESTILIZADO
-   ============================================================ */
+/* FORMULARIO ESTILIZADO*/
 
 .form-panel {
   display: grid;
@@ -487,3 +485,25 @@
   box-shadow: 0 16px 40px rgba(56, 189, 248, 0.28);
 }
 
+/*MENSAJE GLOBAL (UX)*/
+.inventario-alert {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventario-alert--ok {
+  background: rgba(34, 197, 94, 0.1);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.inventario-alert--error {
+  background: rgba(248, 113, 113, 0.08);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}

@@ -1,50 +1,71 @@
 
-
-import { useState } from "react";
+// client/src/pages/LoginPage.jsx
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, user, authError } = useAuth();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [localError, setLocalError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Si ya estoy logueado, no tiene sentido ver el login:
+  // redirigimos automáticamente al inventario.
+  useEffect(() => {
+    if (user) {
+      navigate("/inventario");
+    }
+  }, [user, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError(null);
+    setLocalError(null);
+    setLoading(true);
 
-    try {
-      await login(username, password);
+    const ok = await login(username, password);
+
+    setLoading(false);
+
+    if (ok) {
       navigate("/inventario");
-    } catch (err) {
-      console.error(err);
-      setError("Credenciales incorrectas");
+    } else {
+      // mostramos error genérico si no vino algo desde el backend
+      setLocalError("No se pudo iniciar sesión. Verificá tus datos.");
     }
   }
+
+  const errorToShow = authError || localError;
 
   return (
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Login</h1>
         <p className="auth-subtitle">
-          Ingresá con tu usuario administrador para modificar el inventario.
+          Ingresá con tu usuario y contraseña para modificar el inventario.
         </p>
 
-        {error && <p style={{ color: "#fb7185", fontSize: "0.8rem" }}>{error}</p>}
-
+        {/* Mensaje de error del backend (authError) o local */}
+        {errorToShow && (
+          <div className="login-error">
+            {errorToShow}
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit}>
           <div className="auth-form-group">
-            <label className="auth-label" htmlFor="usuario">
+            <label className="auth-label" htmlFor="username">
               Usuario
             </label>
             <input
-              id="usuario"
+              id="username"
               className="auth-input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
             />
           </div>
 
@@ -58,12 +79,17 @@ export default function LoginPage() {
               className="auth-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
           </div>
 
           <div className="auth-actions">
-            <button type="submit" className="btn btn-primary">
-              Ingresar
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={loading}
+            >
+              {loading ? "Ingresando..." : "Ingresar"}
             </button>
           </div>
         </form>
