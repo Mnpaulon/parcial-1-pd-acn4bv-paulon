@@ -1,36 +1,30 @@
 
+// client/src/context/AuthContext.jsx
+import { createContext, useContext, useEffect, useState } from "react";
 
-import { createContext, useContext, useState, useEffect } from "react";
-
-const AuthContext = createContext();
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);   // { id, username, role }
   const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
   const [authError, setAuthError] = useState(null);
 
-  // Cargar sesión guardada al iniciar la app
+  // Cargar desde localStorage al iniciar
   useEffect(() => {
-    const saved = localStorage.getItem("session");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setToken(parsed.token);
-      setUser(parsed.user);
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setUser(null);
+      }
     }
   }, []);
 
-  // Guardar sesión cada vez que cambia token o user
-  useEffect(() => {
-    if (token && user) {
-      localStorage.setItem("session", JSON.stringify({ token, user }));
-    }
-  }, [token, user]);
-
-  const login = async (username, password) => {
+  async function login(username, password) {
     setAuthError(null);
 
     try {
@@ -43,54 +37,46 @@ export function AuthProvider({ children }) {
       });
 
       const data = await res.json();
-      console.log("LOGIN status:", res.status, "body:", data);
 
       if (!res.ok) {
-        // el backend devolvió error (por ejemplo 400)
-        const msg = data?.error || "Credenciales inválidas";
-        setAuthError(msg);
-        throw new Error(msg);
+        setAuthError(data.error || "Error al iniciar sesión");
+        return false;
       }
 
-      const loggedUser = { username };
-
+      // data: { mensaje, token, user: { id, username, role } }
       setToken(data.token);
-      setUser(loggedUser);
-
-      // persistimos sesión
-      localStorage.setItem(
-        "session",
-        JSON.stringify({ token: data.token, user: loggedUser })
-      );
-
+      setUser(data.user);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       return true;
     } catch (err) {
       console.error("Error en login:", err);
-      if (!authError) {
-        setAuthError(err.message || "Error al conectar con el servidor");
-      }
+      setAuthError("No se pudo conectar al servidor");
       return false;
     }
-  };
+  }
 
-  const logout = () => {
-    setToken(null);
+  function logout() {
     setUser(null);
+    setToken(null);
     setAuthError(null);
-    localStorage.removeItem("session");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  }
+
+  const value = {
+    user,
+    token,
+    authError,
+    login,
+    logout,
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        user,
-        authError,
-        login,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth debe usarse dentro de <AuthProvider>");
+  return ctx;
 }

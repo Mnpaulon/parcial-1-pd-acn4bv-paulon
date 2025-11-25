@@ -1,5 +1,5 @@
 
-
+// client/src/pages/InventarioPage.jsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import ProductoForm from "../components/ProductoForm.jsx";
@@ -12,20 +12,33 @@ export default function InventarioPage() {
   const [editando, setEditando] = useState(null);
   const [filtroNombre, setFiltroNombre] = useState("");
   const [mostrarFormNuevo, setMostrarFormNuevo] = useState(false);
-
   const [mensaje, setMensaje] = useState(null); // { tipo: 'ok' | 'error', texto: string }
 
-  const isLoggedIn = !!user;
+  // pestaña activa: "productos" | "usuarios"
+  const [activeTab, setActiveTab] = useState("productos");
 
+  // estado para gestión de usuarios
+  const [usuarios, setUsuarios] = useState([]);
+  const [nuevoUsername, setNuevoUsername] = useState("");
+  const [nuevoPassword, setNuevoPassword] = useState("");
+  const [nuevoRol, setNuevoRol] = useState("admin");
+
+  const isLoggedIn = !!user;
+  const isAdmin = isLoggedIn && user.role === "admin";
+
+  // ------------------------------
+  // Mensajes globales
+  // ------------------------------
   function mostrarMensaje(tipo, texto) {
     setMensaje({ tipo, texto });
-    // que el mensaje se borre solo después de 3s
     setTimeout(() => {
       setMensaje(null);
     }, 3000);
   }
 
-  // GET de productos (no requiere token)
+  // ------------------------------
+  // Productos
+  // ------------------------------
   async function cargarProductos() {
     try {
       const res = await fetch("http://localhost:3000/api/productos");
@@ -37,7 +50,6 @@ export default function InventarioPage() {
     }
   }
 
-  // DELETE (requiere token)
   async function eliminar(id) {
     if (!isLoggedIn) {
       mostrarMensaje("error", "Debes iniciar sesión para eliminar productos.");
@@ -69,14 +81,12 @@ export default function InventarioPage() {
     }
   }
 
-  // cuando se crea un producto nuevo desde el form
   function handleCreated(nuevo) {
     setProductos((prev) => [...prev, nuevo]);
     setMostrarFormNuevo(false);
     mostrarMensaje("ok", "Producto creado correctamente.");
   }
 
-  // cuando se actualiza un producto desde el form de edición
   function handleUpdated(actualizado) {
     setProductos((prev) =>
       prev.map((p) => (p.id === actualizado.id ? actualizado : p))
@@ -85,7 +95,6 @@ export default function InventarioPage() {
     mostrarMensaje("ok", "Producto actualizado correctamente.");
   }
 
-  // acciones de UI
   function handleNuevoProducto() {
     setEditando(null);
     setMostrarFormNuevo(true);
@@ -96,16 +105,122 @@ export default function InventarioPage() {
     setEditando(prod);
   }
 
-  // FILTRO
   const productosFiltrados = productos.filter((p) => {
     const texto = (p.nombre || "").toLowerCase();
     return texto.includes(filtroNombre.toLowerCase());
   });
 
+  // ------------------------------
+  // Gestión de usuarios
+  // ------------------------------
+  async function cargarUsuarios() {
+    if (!isAdmin) return;
+
+    try {
+      const res = await fetch("http://localhost:3000/api/usuarios");
+      const data = await res.json();
+      setUsuarios(data);
+    } catch (err) {
+      console.error("Error al cargar usuarios:", err);
+      mostrarMensaje("error", "No se pudieron cargar los usuarios.");
+    }
+  }
+
+  async function handleCrearUsuario(e) {
+    e.preventDefault();
+
+    if (!nuevoUsername || !nuevoPassword) {
+      mostrarMensaje("error", "Usuario y contraseña son obligatorios.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/api/usuarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: nuevoUsername,
+          password: nuevoPassword,
+          role: nuevoRol.toLowerCase(),
+        }),
+      });
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => ({}));
+        throw new Error(errorBody.error || "Error al crear usuario");
+      }
+
+      const creado = await res.json();
+      setUsuarios((prev) => [...prev, creado]);
+      setNuevoUsername("");
+      setNuevoPassword("");
+      setNuevoRol("admin");
+      mostrarMensaje("ok", "Usuario creado correctamente.");
+    } catch (err) {
+      console.error("Error al crear usuario:", err);
+      mostrarMensaje("error", err.message || "No se pudo crear el usuario.");
+    }
+  }
+
+  async function handleEliminarUsuario(id) {
+    // No permitir borrarse a sí mismo
+    if (user && user.id === id) {
+      mostrarMensaje(
+        "error",
+        "No podés eliminar tu propia cuenta de administrador."
+      );
+      return;
+    }
+
+    const confirmar = window.confirm(
+      "¿Estás seguro de que querés eliminar este usuario?"
+    );
+    if (!confirmar) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/usuarios/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Error al eliminar usuario");
+      }
+
+      setUsuarios((prev) => prev.filter((u) => u.id !== id));
+      mostrarMensaje("ok", "Usuario eliminado correctamente.");
+    } catch (err) {
+      console.error("Error al eliminar usuario:", err);
+      mostrarMensaje("error", "No se pudo eliminar el usuario.");
+    }
+  }
+
+  // ------------------------------
+  // Effects
+  // ------------------------------
   useEffect(() => {
     cargarProductos();
   }, []);
 
+  // Cargar usuarios solo cuando soy admin y estoy en la pestaña Usuarios
+  useEffect(() => {
+    if (isAdmin && activeTab === "usuarios") {
+      cargarUsuarios();
+    }
+  }, [isAdmin, activeTab]);
+
+  // Si se desloguea mientras estaba en "usuarios", vuelvo a "productos"
+  useEffect(() => {
+    if (!isLoggedIn && activeTab === "usuarios") {
+      setActiveTab("productos");
+    }
+  }, [isLoggedIn, activeTab]);
+
+  // ------------------------------
+  // Render
+  // ------------------------------
   return (
     <div className="inventario-layout">
       {/* SIDEBAR */}
@@ -119,15 +234,39 @@ export default function InventarioPage() {
         </div>
 
         <nav className="sidebar-nav">
-          <button className="sidebar-nav-item sidebar-nav-item--active">
+          <button
+            className={
+              activeTab === "productos"
+                ? "sidebar-nav-item sidebar-nav-item--active"
+                : "sidebar-nav-item"
+            }
+            onClick={() => setActiveTab("productos")}
+          >
             <span>Productos</span>
           </button>
+
+          {isAdmin && (
+            <button
+              className={
+                activeTab === "usuarios"
+                  ? "sidebar-nav-item sidebar-nav-item--active"
+                  : "sidebar-nav-item"
+              }
+              onClick={() => setActiveTab("usuarios")}
+            >
+              <span>Usuarios</span>
+            </button>
+          )}
         </nav>
 
         <div className="sidebar-footer">
           <span className="sidebar-user">
-            <span className="sidebar-user-avatar">M</span>
-            <span className="sidebar-user-name">Matias Paulon</span>
+            <span className="sidebar-user-avatar">
+              {(user?.username || "M").charAt(0).toUpperCase()}
+            </span>
+            <span className="sidebar-user-name">
+              {user ? user.username : "Invitado"}
+            </span>
           </span>
         </div>
       </aside>
@@ -148,178 +287,303 @@ export default function InventarioPage() {
             </div>
           )}
 
-          {/* HEADER */}
-          <header className="inventario-header">
-            <div>
-              <p className="inventario-kicker">Panel de control</p>
-              <h1 className="inventario-title">Gestión de inventario</h1>
-              <p className="inventario-subtitle">
-                Visualizá tus productos. Para modificarlos necesitás iniciar
-                sesión.
-              </p>
-            </div>
+          {/* ================== TAB PRODUCTOS ================== */}
+          {activeTab === "productos" && (
+            <>
+              <header className="inventario-header">
+                <div>
+                  <p className="inventario-kicker">Panel de control</p>
+                  <h1 className="inventario-title">Gestión de inventario</h1>
+                  <p className="inventario-subtitle">
+                    Visualizá tus productos. Para modificarlos necesitás iniciar
+                    sesión.
+                  </p>
+                </div>
 
-            <div className="inventario-header-actions">
-              {/* BUSCADOR */}
-              <div className="inventario-search">
-                <span className="inventario-search-icon">🔍</span>
-                <input
-                  type="text"
-                  placeholder="Buscar por nombre..."
-                  value={filtroNombre}
-                  onChange={(e) => setFiltroNombre(e.target.value)}
-                />
-              </div>
+                <div className="inventario-header-actions">
+                  <div className="inventario-search">
+                    <span className="inventario-search-icon">🔍</span>
+                    <input
+                      type="text"
+                      placeholder="Buscar por nombre..."
+                      value={filtroNombre}
+                      onChange={(e) => setFiltroNombre(e.target.value)}
+                    />
+                  </div>
 
-              {/* RECARGAR DESDE LA API (GET) */}
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={cargarProductos}
-              >
-                ↻ Recargar
-              </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={cargarProductos}
+                  >
+                    ↻ Recargar
+                  </button>
 
-              {/* BOTÓN NUEVO PRODUCTO SOLO SI HAY LOGIN */}
-              {isLoggedIn ? (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleNuevoProducto}
-                >
-                  + Nuevo producto
-                </button>
-              ) : (
-                <span className="inventario-readonly-badge">
-                  Modo lectura (logueate para editar)
-                </span>
+                  {isLoggedIn ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleNuevoProducto}
+                    >
+                      + Nuevo producto
+                    </button>
+                  ) : (
+                    <span className="inventario-readonly-badge">
+                      Modo lectura (logueate para editar)
+                    </span>
+                  )}
+                </div>
+              </header>
+
+              {isLoggedIn && mostrarFormNuevo && (
+                <section className="inventario-form-card">
+                  <h2 className="inventario-form-title">Crear nuevo producto</h2>
+                  <ProductoForm onCreated={handleCreated} />
+                </section>
               )}
-            </div>
-          </header>
 
-          {/* FORMULARIO DE ALTA */}
-          {isLoggedIn && mostrarFormNuevo && (
-            <section className="inventario-form-card">
-              <h2 className="inventario-form-title">Crear nuevo producto</h2>
-              <ProductoForm onCreated={handleCreated} />
-            </section>
+              {isLoggedIn && editando && (
+                <section className="inventario-form-card">
+                  <h2 className="inventario-form-title">
+                    Editar producto: {editando.nombre}
+                  </h2>
+                  <ProductoEditar
+                    producto={editando}
+                    onUpdated={handleUpdated}
+                    onCancel={() => setEditando(null)}
+                  />
+                </section>
+              )}
+
+              <section className="inventario-resumen">
+                <div className="inventario-card">
+                  <span className="inventario-card-label">
+                    Total de productos
+                  </span>
+                  <span className="inventario-card-value">
+                    {productos.length}
+                  </span>
+                  <span className="inventario-card-helper">
+                    Registrados en el sistema
+                  </span>
+                </div>
+
+                <div className="inventario-card">
+                  <span className="inventario-card-label">Stock global</span>
+                  <span className="inventario-card-value">
+                    {productos.reduce((total, p) => total + (p.stock || 0), 0)}
+                  </span>
+                  <span className="inventario-card-helper">
+                    Unidades disponibles
+                  </span>
+                </div>
+
+                <div className="inventario-card">
+                  <span className="inventario-card-label">Valor estimado</span>
+                  <span className="inventario-card-value">
+                    $
+                    {productos
+                      .reduce(
+                        (total, p) => total + (p.stock || 0) * (p.precio || 0),
+                        0
+                      )
+                      .toLocaleString("es-AR")}
+                  </span>
+                  <span className="inventario-card-helper">
+                    Stock valorizado
+                  </span>
+                </div>
+              </section>
+
+              <section className="inventario-table-card">
+                <div className="inventario-table-header">
+                  <div>
+                    <h2>Listado de productos</h2>
+                    <p>Administrá los datos básicos de cada ítem.</p>
+                  </div>
+                </div>
+
+                <div className="inventario-table-wrapper">
+                  <table className="inventario-table">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Stock</th>
+                        <th>Precio</th>
+                        <th className="th-actions">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productosFiltrados.map((producto) => (
+                        <tr key={producto.id}>
+                          <td>{producto.nombre}</td>
+                          <td>{producto.categoria}</td>
+                          <td>{producto.stock}</td>
+                          <td>
+                            ${producto.precio?.toLocaleString("es-AR")}
+                          </td>
+                          <td className="td-actions">
+                            {isLoggedIn ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className="btn btn-ghost"
+                                  onClick={() =>
+                                    handleEditarProducto(producto)
+                                  }
+                                >
+                                  Editar
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-danger"
+                                  onClick={() => eliminar(producto.id)}
+                                >
+                                  Eliminar
+                                </button>
+                              </>
+                            ) : (
+                              <span className="acciones-lectura">
+                                Login para editar
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+
+                      {productosFiltrados.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="inventario-empty">
+                            No se encontraron productos para el criterio de
+                            búsqueda.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </>
           )}
 
-          {/* FORMULARIO DE EDICIÓN */}
-          {isLoggedIn && editando && (
-            <section className="inventario-form-card">
-              <h2 className="inventario-form-title">
-                Editar producto: {editando.nombre}
-              </h2>
-              <ProductoEditar
-                producto={editando}
-                onUpdated={handleUpdated}
-                onCancel={() => setEditando(null)}
-              />
-            </section>
-          )}
-
-          {/* TARJETAS RESUMEN */}
-          <section className="inventario-resumen">
-            <div className="inventario-card">
-              <span className="inventario-card-label">Total de productos</span>
-              <span className="inventario-card-value">{productos.length}</span>
-              <span className="inventario-card-helper">
-                Registrados en el sistema
-              </span>
-            </div>
-
-            <div className="inventario-card">
-              <span className="inventario-card-label">Stock global</span>
-              <span className="inventario-card-value">
-                {productos.reduce((total, p) => total + (p.stock || 0), 0)}
-              </span>
-              <span className="inventario-card-helper">
-                Unidades disponibles
-              </span>
-            </div>
-
-            <div className="inventario-card">
-              <span className="inventario-card-label">Valor estimado</span>
-              <span className="inventario-card-value">
-                $
-                {productos
-                  .reduce(
-                    (total, p) => total + (p.stock || 0) * (p.precio || 0),
-                    0
-                  )
-                  .toLocaleString("es-AR")}
-              </span>
-              <span className="inventario-card-helper">Stock valorizado</span>
-            </div>
-          </section>
-
-          {/* TABLA PRINCIPAL */}
-          <section className="inventario-table-card">
-            <div className="inventario-table-header">
-              <div>
-                <h2>Listado de productos</h2>
-                <p>Administrá los datos básicos de cada ítem.</p>
+          {/* ================== TAB USUARIOS (ADMIN) ================== */}
+          {activeTab === "usuarios" && isAdmin && (
+            <section className="inventario-users-card">
+              <div className="inventario-users-header">
+                <h2>Gestión de usuarios</h2>
+                <p>
+                  Creá nuevos usuarios con acceso al inventario. Solo los
+                  administradores pueden ver esta sección.
+                </p>
               </div>
-            </div>
 
-            <div className="inventario-table-wrapper">
-              <table className="inventario-table">
+              {/* FORMULARIO */}
+              <form
+                className="usuarios-form"
+                onSubmit={handleCrearUsuario}
+                autoComplete="off"
+              >
+                <div className="usuarios-form-field">
+                  <label>
+                    Usuario
+                    <input
+                      type="text"
+                      value={nuevoUsername}
+                      onChange={(e) => setNuevoUsername(e.target.value)}
+                      placeholder="Nombre de usuario"
+                    />
+                  </label>
+                </div>
+
+                <div className="usuarios-form-field">
+                  <label>
+                    Contraseña
+                    <input
+                      type="password"
+                      value={nuevoPassword}
+                      onChange={(e) => setNuevoPassword(e.target.value)}
+                      placeholder="Contraseña"
+                    />
+                  </label>
+                </div>
+
+                <div className="usuarios-form-field">
+                  <label>
+                    Rol
+                    <select
+                      value={nuevoRol}
+                      onChange={(e) => setNuevoRol(e.target.value)}
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="editor">Editor</option>
+                      <option value="lector">Lector</option>
+                    </select>
+                  </label>
+                </div>
+
+                <button type="submit" className="usuarios-create-btn">
+                  Crear usuario
+                </button>
+              </form>
+
+              {/* TABLA */}
+              <table className="usuarios-table">
                 <thead>
                   <tr>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th>Stock</th>
-                    <th>Precio</th>
-                    <th className="th-actions">Acciones</th>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {productosFiltrados.map((producto) => (
-                    <tr key={producto.id}>
-                      <td>{producto.nombre}</td>
-                      <td>{producto.categoria}</td>
-                      <td>{producto.stock}</td>
-                      <td>${producto.precio?.toLocaleString("es-AR")}</td>
-                      <td className="td-actions">
-                        {isLoggedIn ? (
-                          <>
-                            <button
-                              type="button"
-                              className="btn btn-ghost"
-                              onClick={() => handleEditarProducto(producto)}
-                            >
-                              Editar
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-outline-danger"
-                              onClick={() => eliminar(producto.id)}
-                            >
-                              Eliminar
-                            </button>
-                          </>
-                        ) : (
-                          <span className="acciones-lectura">
-                            Login para editar
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-
-                  {productosFiltrados.length === 0 && (
+                  {usuarios.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="inventario-empty">
-                        No se encontraron productos para el criterio de
-                        búsqueda.
+                      <td
+                        colSpan="4"
+                        style={{
+                          textAlign: "center",
+                          padding: "1rem",
+                          color: "#9ca3af",
+                        }}
+                      >
+                        No hay usuarios cargados.
                       </td>
                     </tr>
+                  ) : (
+                    usuarios.map((u) => {
+                      const esActual =
+                        user && Number(user.id) === Number(u.id);
+
+                      return (
+                        <tr key={u.id}>
+                          <td>{u.id}</td>
+                          <td>{u.username}</td>
+                          <td>{u.role}</td>
+                          <td>
+                            {esActual ? (
+                              <span className="tag-cuenta-actual">
+                                Cuenta actual
+                              </span>
+                            ) : (
+                              <button
+                                className="btn-outline-danger"
+                                type="button"
+                                onClick={() => handleEliminarUsuario(u.id)}
+                              >
+                                Eliminar
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
-            </div>
-          </section>
+            </section>
+          )}
         </div>
       </main>
     </div>

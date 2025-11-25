@@ -61,12 +61,5 @@
     "precio": 2500,
     "categoria": "periferico",
     "stock": 50
-  },
-  {
-    "id": 12,
-    "nombre": "ipad 5t",
-    "precio": 162000,
-    "categoria": "tecnologia",
-    "stock": 10
   }
 ]

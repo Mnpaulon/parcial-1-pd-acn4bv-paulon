@@ -1,5 +1,5 @@
 
-// server/auth.routes.js
+
 import { Router } from "express";
 import { login } from "./auth.controller.js";
 

@@ -3,32 +3,38 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "./auth.controller.js";
 
-// Middleware para verificar token
+// Middleware genérico para verificar el token JWT
 export function verificarToken(req, res, next) {
-  const header = req.headers.authorization;
+  const authHeader = req.headers.authorization || "";
 
-  // Si no mandan header Authorization → error
-  if (!header) {
-    return res.status(401).json({ error: "Token no proporcionado" });
-  }
+  // Esperamos algo tipo: "Bearer <token>"
+  const [scheme, token] = authHeader.split(" ");
 
-  // Formato esperado: "Bearer asdasd.asdasd.asdasd"
-  const [tipo, token] = header.split(" ");
-
-  if (tipo !== "Bearer" || !token) {
-    return res.status(400).json({ error: "Formato de token inválido" });
+  if (!token || scheme !== "Bearer") {
+    return res
+      .status(401)
+      .json({ error: "Token no enviado o formato inválido" });
   }
 
   try {
-    // Decodificamos y verificamos token
     const payload = jwt.verify(token, JWT_SECRET);
-
-    // Guardamos los datos del usuario dentro de req
+    // Guardamos los datos del usuario en la request
     req.user = payload;
-
-    // Continua a la ruta original
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Token inválido o expirado" });
+    console.error("Error al verificar token:", err);
+    return res
+      .status(401)
+      .json({ error: "Token inválido o expirado" });
   }
+}
+
+// (opcional) Middleware para rutas solo de admin
+export function soloAdmin(req, res, next) {
+  if (!req.user || req.user.role !== "admin") {
+    return res
+      .status(403)
+      .json({ error: "Acceso restringido a usuarios administradores" });
+  }
+  next();
 }
