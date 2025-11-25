@@ -95,7 +95,7 @@ Se eliminaron roles innecesarios y se estableció un esquema simple y claro:
 
 #  4. Funcionalidades Implementadas
 
-## 🟩 4.1 Gestión de Productos (CRUD)
+##  4.1 Gestión de Productos (CRUD)
 - Alta de productos  
 - Edición individual  
 - Eliminación con confirmación  
